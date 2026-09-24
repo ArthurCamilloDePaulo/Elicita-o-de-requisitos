@@ -58,7 +58,7 @@ Dado que reportei um problema no aplicativo,
 Quando o envio for concluído,
 Então a tela deve exibir uma mensagem confirmando o recebimento e os próximos passos.
 
-    PRIORIZAÇÃO MOSCOW
+PRIORIZAÇÃO MOSCOW
 
 Must Have: Acompanhar pedido em tempo real. Justificativa: Funcionalidade básica de qualquer aplicativo de entrega. Sem isso o cliente fica sem informações.
 
