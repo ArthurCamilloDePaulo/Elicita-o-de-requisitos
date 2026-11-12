@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:collaboration id="Collaboration_1">
+    <bpmn:participant id="Participant_Aluno" name="Aluno" processRef="Process_Aluno" />
+    <bpmn:participant id="Participant_Escola" name="Escola de idiomas" processRef="Process_Escola" />
+    <bpmn:messageFlow id="MF_Pedido" name="Pedido de reposição" sourceRef="Task_Solicitar" targetRef="Start_Esc" />
+    <bpmn:messageFlow id="MF_Recusa" name="Recusa" sourceRef="Task_Recusa" targetRef="Task_Receber" />
+    <bpmn:messageFlow id="MF_Confirma" name="Confirmação" sourceRef="Task_Confirmar" targetRef="Task_Receber" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_Aluno" isExecutable="false">
+    <bpmn:startEvent id="Start_Aluno" name="Aluno faltou">
+      <bpmn:outgoing>SF_A1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="Task_Solicitar" name="Solicitar reposição">
+      <bpmn:incoming>SF_A1</bpmn:incoming>
+      <bpmn:outgoing>SF_A2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Receber" name="Receber resposta da escola">
+      <bpmn:incoming>SF_A2</bpmn:incoming>
+      <bpmn:outgoing>SF_A3</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="End_Aluno" name="Aluno informado">
+      <bpmn:incoming>SF_A3</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SF_A1" sourceRef="Start_Aluno" targetRef="Task_Solicitar" />
+    <bpmn:sequenceFlow id="SF_A2" name="Aguarda resposta" sourceRef="Task_Solicitar" targetRef="Task_Receber" />
+    <bpmn:sequenceFlow id="SF_A3" sourceRef="Task_Receber" targetRef="End_Aluno" />
+  </bpmn:process>
+  <bpmn:process id="Process_Escola" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_Escola">
+      <bpmn:lane id="Lane_Secretaria" name="Secretaria">
+        <bpmn:flowNodeRef>Start_Esc</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Consultar</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_Vaga</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Reservar</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Recusa</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_Recusa</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_Split</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Confirmar</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>GW_Join</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_Agendada</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Professor" name="Professor">
+        <bpmn:flowNodeRef>Task_Incluir</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_Esc" name="Pedido recebido">
+      <bpmn:outgoing>SF_E1</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_Pedido" />
+    </bpmn:startEvent>
+    <bpmn:task id="Task_Consultar" name="Consultar vagas em outros horários">
+      <bpmn:incoming>SF_E1</bpmn:incoming>
+      <bpmn:outgoing>SF_E2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="GW_Vaga" name="Há vaga?">
+      <bpmn:incoming>SF_E2</bpmn:incoming>
+      <bpmn:outgoing>SF_E3</bpmn:outgoing>
+      <bpmn:outgoing>SF_E4</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_Reservar" name="Reservar vaga na turma">
+      <bpmn:incoming>SF_E3</bpmn:incoming>
+      <bpmn:outgoing>SF_E6</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Recusa" name="Informar recusa ao aluno">
+      <bpmn:incoming>SF_E4</bpmn:incoming>
+      <bpmn:outgoing>SF_E5</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="End_Recusa" name="Reposição recusada">
+      <bpmn:incoming>SF_E5</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:parallelGateway id="GW_Split">
+      <bpmn:incoming>SF_E6</bpmn:incoming>
+      <bpmn:outgoing>SF_E7</bpmn:outgoing>
+      <bpmn:outgoing>SF_E8</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:task id="Task_Confirmar" name="Confirmar reposição ao aluno">
+      <bpmn:incoming>SF_E7</bpmn:incoming>
+      <bpmn:outgoing>SF_E9</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Incluir" name="Incluir aluno na lista da turma">
+      <bpmn:incoming>SF_E8</bpmn:incoming>
+      <bpmn:outgoing>SF_E10</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:parallelGateway id="GW_Join">
+      <bpmn:incoming>SF_E9</bpmn:incoming>
+      <bpmn:incoming>SF_E10</bpmn:incoming>
+      <bpmn:outgoing>SF_E11</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:endEvent id="End_Agendada" name="Reposição agendada">
+      <bpmn:incoming>SF_E11</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SF_E1" sourceRef="Start_Esc" targetRef="Task_Consultar" />
+    <bpmn:sequenceFlow id="SF_E2" sourceRef="Task_Consultar" targetRef="GW_Vaga" />
+    <bpmn:sequenceFlow id="SF_E3" name="Sim" sourceRef="GW_Vaga" targetRef="Task_Reservar" />
+    <bpmn:sequenceFlow id="SF_E4" name="Não" sourceRef="GW_Vaga" targetRef="Task_Recusa" />
+    <bpmn:sequenceFlow id="SF_E5" sourceRef="Task_Recusa" targetRef="End_Recusa" />
+    <bpmn:sequenceFlow id="SF_E6" sourceRef="Task_Reservar" targetRef="GW_Split" />
+    <bpmn:sequenceFlow id="SF_E7" sourceRef="GW_Split" targetRef="Task_Confirmar" />
+    <bpmn:sequenceFlow id="SF_E8" sourceRef="GW_Split" targetRef="Task_Incluir" />
+    <bpmn:sequenceFlow id="SF_E9" sourceRef="Task_Confirmar" targetRef="GW_Join" />
+    <bpmn:sequenceFlow id="SF_E10" sourceRef="Task_Incluir" targetRef="GW_Join" />
+    <bpmn:sequenceFlow id="SF_E11" sourceRef="GW_Join" targetRef="End_Agendada" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1">
+      <bpmndi:BPMNShape id="Participant_Aluno_di" bpmnElement="Participant_Aluno" isHorizontal="true">
+        <dc:Bounds x="160" y="40" width="1300" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Participant_Escola_di" bpmnElement="Participant_Escola" isHorizontal="true">
+        <dc:Bounds x="160" y="300" width="1300" height="420" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Secretaria_di" bpmnElement="Lane_Secretaria" isHorizontal="true">
+        <dc:Bounds x="190" y="300" width="1270" height="260" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Professor_di" bpmnElement="Lane_Professor" isHorizontal="true">
+        <dc:Bounds x="190" y="560" width="1270" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_Aluno_di" bpmnElement="Start_Aluno">
+        <dc:Bounds x="212" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="180" y="144" width="100" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Solicitar_di" bpmnElement="Task_Solicitar">
+        <dc:Bounds x="300" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Receber_di" bpmnElement="Task_Receber">
+        <dc:Bounds x="1200" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Aluno_di" bpmnElement="End_Aluno">
+        <dc:Bounds x="1362" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1330" y="144" width="100" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_Esc_di" bpmnElement="Start_Esc">
+        <dc:Bounds x="332" y="472" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="300" y="514" width="100" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Consultar_di" bpmnElement="Task_Consultar">
+        <dc:Bounds x="430" y="450" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_Vaga_di" bpmnElement="GW_Vaga" isMarkerVisible="true">
+        <dc:Bounds x="605" y="465" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="580" y="521" width="100" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Reservar_di" bpmnElement="Task_Reservar">
+        <dc:Bounds x="740" y="450" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Recusa_di" bpmnElement="Task_Recusa">
+        <dc:Bounds x="740" y="310" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Recusa_di" bpmnElement="End_Recusa">
+        <dc:Bounds x="932" y="332" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="900" y="374" width="100" height="28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_Split_di" bpmnElement="GW_Split">
+        <dc:Bounds x="915" y="465" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Confirmar_di" bpmnElement="Task_Confirmar">
+        <dc:Bounds x="1040" y="450" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Incluir_di" bpmnElement="Task_Incluir">
+        <dc:Bounds x="1040" y="600" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_Join_di" bpmnElement="GW_Join">
+        <dc:Bounds x="1215" y="465" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Agendada_di" bpmnElement="End_Agendada">
+        <dc:Bounds x="1332" y="472" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1300" y="514" width="100" height="28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SF_A1_di" bpmnElement="SF_A1">
+        <di:waypoint x="248" y="120" />
+        <di:waypoint x="300" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_A2_di" bpmnElement="SF_A2">
+        <di:waypoint x="400" y="120" />
+        <di:waypoint x="1200" y="120" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="750" y="98" width="100" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_A3_di" bpmnElement="SF_A3">
+        <di:waypoint x="1300" y="120" />
+        <di:waypoint x="1362" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_E1_di" bpmnElement="SF_E1">
+        <di:waypoint x="368" y="490" />
+        <di:waypoint x="430" y="490" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_E2_di" bpmnElement="SF_E2">
+        <di:waypoint x="530" y="490" />
+        <di:waypoint x="605" y="490" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_E3_di" bpmnElement="SF_E3">
+        <di:waypoint x="655" y="490" />
+        <di:waypoint x="740" y="490" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="690" y="472" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_E4_di" bpmnElement="SF_E4">
+        <di:waypoint x="630" y="465" />
+        <di:waypoint x="630" y="350" />
+        <di:waypoint x="740" y="350" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="638" y="415" width="22" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_E5_di" bpmnElement="SF_E5">
+        <di:waypoint x="840" y="350" />
+        <di:waypoint x="932" y="350" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_E6_di" bpmnElement="SF_E6">
+        <di:waypoint x="840" y="490" />
+        <di:waypoint x="915" y="490" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_E7_di" bpmnElement="SF_E7">
+        <di:waypoint x="965" y="490" />
+        <di:waypoint x="1040" y="490" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_E8_di" bpmnElement="SF_E8">
+        <di:waypoint x="940" y="515" />
+        <di:waypoint x="940" y="640" />
+        <di:waypoint x="1040" y="640" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_E9_di" bpmnElement="SF_E9">
+        <di:waypoint x="1140" y="490" />
+        <di:waypoint x="1215" y="490" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_E10_di" bpmnElement="SF_E10">
+        <di:waypoint x="1140" y="640" />
+        <di:waypoint x="1240" y="640" />
+        <di:waypoint x="1240" y="515" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SF_E11_di" bpmnElement="SF_E11">
+        <di:waypoint x="1265" y="490" />
+        <di:waypoint x="1332" y="490" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MF_Pedido_di" bpmnElement="MF_Pedido">
+        <di:waypoint x="350" y="160" />
+        <di:waypoint x="350" y="472" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="358" y="222" width="70" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MF_Recusa_di" bpmnElement="MF_Recusa">
+        <di:waypoint x="790" y="310" />
+        <di:waypoint x="790" y="225" />
+        <di:waypoint x="1230" y="225" />
+        <di:waypoint x="1230" y="160" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1000" y="207" width="40" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MF_Confirma_di" bpmnElement="MF_Confirma">
+        <di:waypoint x="1090" y="450" />
+        <di:waypoint x="1090" y="265" />
+        <di:waypoint x="1270" y="265" />
+        <di:waypoint x="1270" y="160" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1140" y="269" width="70" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
