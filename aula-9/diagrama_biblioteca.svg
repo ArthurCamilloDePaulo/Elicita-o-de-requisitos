@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760">
+<defs>
+  <style>
+    .title{font: bold 26px Arial,sans-serif;fill:#172033}
+    .boundary{fill:#fff;stroke:#263449;stroke-width:2.5}
+    .boundaryTitle{font:bold 20px Arial,sans-serif;fill:#172033}
+    .usecase{fill:#f4f7ff;stroke:#3157a4;stroke-width:2}
+    .ucText{font:17px Arial,sans-serif;fill:#172033;text-anchor:middle}
+    .actor{stroke:#202b3c;stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
+    .actorText{font:bold 17px Arial,sans-serif;fill:#172033;text-anchor:middle}
+    .link{stroke:#475569;stroke-width:2;fill:none}
+  </style>
+</defs>
+<rect width="1200" height="760" fill="#ffffff"/>
+<text x="600" y="42" class="title" text-anchor="middle">Diagrama de Casos de Uso — Biblioteca Online</text>
+<rect x="285" y="85" width="660" height="615" rx="8" class="boundary"/>
+<text x="615" y="120" class="boundaryTitle" text-anchor="middle">Sistema Biblioteca Online</text>
+
+<!-- Use cases -->
+<ellipse cx="610" cy="205" rx="145" ry="42" class="usecase"/><text x="610" y="211" class="ucText">Consultar catálogo</text>
+<ellipse cx="610" cy="315" rx="145" ry="42" class="usecase"/><text x="610" y="321" class="ucText">Reservar livro</text>
+<ellipse cx="610" cy="425" rx="145" ry="42" class="usecase"/><text x="610" y="431" class="ucText">Realizar empréstimo</text>
+<ellipse cx="610" cy="535" rx="145" ry="42" class="usecase"/><text x="610" y="541" class="ucText">Registrar devolução</text>
+<ellipse cx="610" cy="635" rx="145" ry="42" class="usecase"/><text x="610" y="641" class="ucText">Enviar notificação</text>
+
+<!-- Leitor actor -->
+<g class="actor"><circle cx="115" cy="260" r="17"/><path d="M115 277 L115 340 M80 300 L150 300 M115 340 L85 385 M115 340 L145 385"/></g>
+<text x="115" y="415" class="actorText">Leitor</text>
+<!-- Librarian actor -->
+<g class="actor"><circle cx="115" cy="525" r="17"/><path d="M115 542 L115 605 M80 565 L150 565 M115 605 L85 650 M115 605 L145 650"/></g>
+<text x="115" y="682" class="actorText">Bibliotecário</text>
+<!-- Notification external system actor -->
+<g class="actor"><rect x="1015" y="300" width="105" height="75" rx="8"/><path d="M1015 315 L1067 350 L1120 315"/></g>
+<text x="1067" y="402" class="actorText">Serviço de</text><text x="1067" y="424" class="actorText">Notificações</text>
+<text x="1067" y="447" font="Arial" font-size="13" fill="#475569" text-anchor="middle">(sistema externo)</text>
+
+<!-- associations -->
+<path class="link" d="M132 260 L465 205"/>
+<path class="link" d="M132 285 L465 315"/>
+<path class="link" d="M132 310 L465 205"/>
+<path class="link" d="M132 565 L465 425"/>
+<path class="link" d="M132 590 L465 535"/>
+<path class="link" d="M755 635 L1015 338"/>
+<path class="link" d="M755 315 L835 635"/>
+<path class="link" d="M755 535 L835 635"/>
+</svg>
